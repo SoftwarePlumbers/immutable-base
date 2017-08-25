@@ -2,7 +2,7 @@
   "name": "immutable-base",
   "version": "0.1.1",
   "description": "Utilities for creating immutable classes",
-  "main": "index.js",
+  "main": "immutable.js",
   "scripts": {
     "test": "DEBUG=immutable-base~immutable mocha",
     "lint": "./node_modules/.bin/eslint --format unix *.js; exit 0",
