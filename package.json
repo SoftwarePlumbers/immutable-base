@@ -1,0 +1,34 @@
+{
+  "name": "immutable-base",
+  "version": "0.1.1",
+  "description": "Utilities for creating immutable classes",
+  "main": "index.js",
+  "scripts": {
+    "test": "DEBUG=immutable-base~immutable mocha",
+    "lint": "./node_modules/.bin/eslint --format unix *.js; exit 0"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softwareplumbers/immutable-base.git"
+  },
+  "keywords": [
+    "immutable",
+    "class",
+    "inheritance",
+    "ES6"
+  ],
+  "author": "Jonathan Essex",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/softwareplumbers/immutable-base/issues"
+  },
+  "homepage": "https://github.com/softwareplumbers/immutable-base#readme",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "eslint": "^4.5.0",
+    "ink-docstrap": "^1.3.0",
+    "jsdoc": "^3.5.4",
+    "mocha": "^3.5.0"
+  }
+}
