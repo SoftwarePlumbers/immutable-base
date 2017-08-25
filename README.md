@@ -8,9 +8,9 @@ This is really nothing but a handy utility for creating immutable object classes
 
 ```javascript
 
-const { Immutable } = require(immutable-base);
+const Immutable = require(immutable-base);
 
-class MyClass extends Immutable({ name: "", address, "", tel: ""}) {};
+const MyClass = Immutable({ name: "", address, "", tel: ""});
 
 ```
 
