@@ -7,18 +7,31 @@ const debug = require('debug')('immutable-base~immutable');
  * Basically, merge properties in args[0] into defaults, iff we have a single argument and it is an object.
  *
  */
-function _preprocessArguments(args, defaults) {
+function processArguments(props, args, defaults) {
 
-    for (property of Object.getOwnPropertyNames(defaults)) {
-        let value = defaults[property];
+    debug('processArguments',props,args,defaults);
+
+    values = Object.assign({}, defaults);
+    let properties = Object.getOwnPropertyNames(values);
+
+    // First execute any single-arg functions to create dynamic defaults
+    for (property of properties) {
+        let value = values[property];
         if (typeof value === 'function' && value.length === 0) 
-            defaults[property] = value();
+            values[property] = value();
     }
 
+    // Then expand a single argument that is an object into a set of values
     if (args.length === 1 && typeof args[0] === 'object') {
-        Object.assign(defaults, args[0]);
-        args.length = 0;
+        Object.assign(values, args[0]);
+    } else {
+    // Or assign arguments to properties in order
+        for (i = 0; i < Math.min(args.length, props.length); i++)
+            values[props[i]] = args[i];
     }
+
+    debug('processArguments returns',values);
+    return values;
 }
 
 /** Create an immutable class
@@ -49,16 +62,13 @@ function create(defaults) {
          */
         constructor() {
             debug('constructor', props, defaults, arguments);
-            let args = arguments;
-            defaults = Object.assign({}, defaults);
 
-            // Handle case where we have one argument that's an object: assume it's properties to pass in
-            _preprocessArguments(args,defaults);
+            values = processArguments(props,arguments,defaults);
 
             // Otherwise assign arguments to properties in order
-            for (let i = 0; i < props.length; i++) {
-                let value = i < args.length ? args[i] : defaults[props[i]];
-                Object.defineProperty(this, props[i], { value, enumerable: true, writable: false });
+            for (let prop of props) {
+                let value = values[prop]
+                Object.defineProperty(this, prop, { value, enumerable: true, writable: false });
             }           
         }
 
@@ -111,8 +121,11 @@ function create(defaults) {
  */
 function extend(to_extend, new_defaults = {}) {
 
-    let new_props = Object.getOwnPropertyNames(new_defaults);
-    let props = to_extend.getImmutablePropertyNames().concat(new_props);
+    let new_default_props = Object.getOwnPropertyNames(new_defaults);
+    let old_props = to_extend.getImmutablePropertyNames();
+    let new_props = new_default_props.filter(e => old_props.indexOf(e) < 0);
+    //let overriden_props = new_default_props.filter(e => old_props.indexOf(e) >= 0);
+    let props = old_props.concat(new_props);
 
     debug('merged props', props);
     
@@ -129,20 +142,17 @@ function extend(to_extend, new_defaults = {}) {
          * properties defined in the new_defaults object .
          */
         constructor() {
-            // take care of elements in superclass
-            super(...arguments);
-
-            let args = arguments;
-            new_defaults = Object.assign({}, new_defaults);
 
             // Handle case where we have one argument that's an object: assume it's properties to pass in
-            _preprocessArguments(args,new_defaults);
+            let values = processArguments(props, arguments, new_defaults);
 
-            // Otherwise assign arguments to properties in order
-            for (let i = to_extend.getImmutablePropertyNames().length; i < props.length; i++) {
-                let value = i < args.length ? args[i] : new_defaults[props[i]];
+            // Handle values for base class
+            super(values);
+            // assign values to properties in order
+            for (let prop of new_props) {
+                let value = values[prop];
                 debug('value', value);
-                Object.defineProperty(this, props[i], { value, enumerable: true, writable: false });
+                Object.defineProperty(this, prop, { value, enumerable: true, writable: false });
             }           
         }
 

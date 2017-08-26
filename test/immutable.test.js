@@ -116,4 +116,22 @@ describe('Immutable', () => {
 
 		expect(i1.attr1).to.be.an.instanceof(Date);
 	});
+
+    it('can override defaults in a subclass', () => {
+        const class1 = Immutable( { attr1: 2 } );
+        const class2 = class1.extend({ attr1: 3, attr2: 2 });
+
+        let i1 = new class1();
+        let i2 = new class2();
+
+        expect(i1.attr1).to.equal(2);
+        expect(i2.attr1).to.equal(3);
+        expect(i2.attr2).to.equal(2);
+
+        let i3 = new class2(5,6);
+
+        expect(i3.attr1).to.equal(5);
+        expect(i3.attr2).to.equal(6);
+
+    });
 });
