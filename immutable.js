@@ -7,7 +7,14 @@ const debug = require('debug')('immutable-base~immutable');
  * Basically, merge properties in args[0] into defaults, iff we have a single argument and it is an object.
  *
  */
-function _processPropertiesArgument(args, defaults) {
+function _preprocessArguments(args, defaults) {
+
+    for (property of Object.getOwnPropertyNames(defaults)) {
+        let value = defaults[property];
+        if (typeof value === 'function' && value.length === 0) 
+            defaults[property] = value();
+    }
+
     if (args.length === 1 && typeof args[0] === 'object') {
         Object.assign(defaults, args[0]);
         args.length = 0;
@@ -46,7 +53,7 @@ function create(defaults) {
             defaults = Object.assign({}, defaults);
 
             // Handle case where we have one argument that's an object: assume it's properties to pass in
-            _processPropertiesArgument(args,defaults);
+            _preprocessArguments(args,defaults);
 
             // Otherwise assign arguments to properties in order
             for (let i = 0; i < props.length; i++) {
@@ -129,7 +136,7 @@ function extend(to_extend, new_defaults = {}) {
             new_defaults = Object.assign({}, new_defaults);
 
             // Handle case where we have one argument that's an object: assume it's properties to pass in
-            _processPropertiesArgument(args,new_defaults);
+            _preprocessArguments(args,new_defaults);
 
             // Otherwise assign arguments to properties in order
             for (let i = to_extend.getImmutablePropertyNames().length; i < props.length; i++) {

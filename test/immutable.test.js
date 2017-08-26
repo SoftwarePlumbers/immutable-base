@@ -108,4 +108,12 @@ describe('Immutable', () => {
 		expect(i.attr2).to.equal(5);
 		expect(i.attr3).to.equal(6);
 	});
+
+	it('can use functions to create defaults', () => {
+		const class1 = Immutable( { attr1: () => new Date() } );
+
+		let i1 = new class1();
+
+		expect(i1.attr1).to.be.an.instanceof(Date);
+	});
 });
