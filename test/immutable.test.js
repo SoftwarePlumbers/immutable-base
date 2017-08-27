@@ -134,4 +134,19 @@ describe('Immutable', () => {
         expect(i3.attr2).to.equal(6);
 
     });
+
+    it('can merge classes with calculated attributes', () => {
+
+        class C1 extends Immutable( { attr1: 1, attr2: 2 } ) {
+            get attr3() { return this.attr1 + this.attr2; }
+        };
+
+        let i1 = new C1(3,4);
+        i1 = i1.setAttr1(5);
+
+        expect(i1.attr1).to.equal(5);
+        expect(i1.attr2).to.equal(4);
+        expect(i1.attr3).to.equal(9);
+    });
+
 });
